@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Growth Loop · Product-Led Growth Dashboard</title>
+<style>
+:root{--ink:#3b2f2a;--cream:#fff8ee;--mint:#cdf3e4;--pink:#ffd3e0;--lilac:#e3d5ff;--butter:#fff1b0}
+*{box-sizing:border-box}body{margin:0;padding:24px 18px;background:var(--cream);color:var(--ink);font:16px/1.55 system-ui,sans-serif}
+main{max-width:980px;margin:0 auto}h1{margin:0 0 4px}h2{margin:28px 0 8px}
+.pill{display:inline-block;background:var(--butter);border:2px solid var(--ink);border-radius:99px;padding:1px 10px;font-weight:600;font-size:.8rem}
+.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:16px}
+.c{border:3px solid var(--ink);border-radius:18px;box-shadow:5px 5px 0 var(--ink);padding:14px 16px}.c b{display:block;font-size:1.8rem}
+.wrap{overflow-x:auto}table{border-collapse:collapse;min-width:420px}td,th{padding:6px 10px;border:2px solid var(--ink);text-align:center}
+.bar{height:12px;background:var(--lilac);border:2px solid var(--ink);border-radius:6px}a{color:#a85a28}
+</style></head><body><main>
+<h1>Growth Loop</h1><span class="pill">Simulated data: 3,000 made-up SaaS users, 26 weeks</span>
+<p>A product-led growth dashboard: who sticks, which channels pay back, and which accounts need a human today.</p>
+<div class="k" id="k"></div>
+<h2>Retention by signup month</h2><p>Share of each cohort still active N months (4-week blocks) after signup. Only fully observed cells are shown.</p>
+<div class="wrap"><table id="hm"></table></div>
+<h2>Revenue to date vs acquisition cost, by channel</h2><p>Revenue per user so far divided by the assumed cost to acquire them. Above 1 means the channel has already paid back.</p>
+<div class="wrap"><table id="ch"></table></div>
+<p style="margin-top:28px"><a href="https://github.com/Junekavete82/growth-loop">Code and method on GitHub</a></p>
+<script src="data.js"></script><script>
+const D=DATA,$=i=>document.getElementById(i),b=D.backtest;
+$("k").innerHTML=[["Power Users",D.power,"top-decile engagement and 4+ features","var(--mint)"],["At-Risk accounts",D.at_risk,"usage fell by more than half","var(--pink)"],
+["Back-test: flagged",b.risk_rate+"%","stopped coming back within 4 weeks (vs "+b.base_rate+"% of the rest)","var(--lilac)"]]
+.map(x=>`<div class="c" style="background:${x[3]}"><b>${x[1]}</b>${x[0]}<br><small>${x[2]}</small></div>`).join("");
+const hue=v=>`rgba(10,122,90,${(v/100).toFixed(2)})`;
+$("hm").innerHTML="<tr><th>Cohort</th>"+D.cohorts[0].cells.map((_,i)=>`<th>M${i}</th>`).join("")+"</tr>"+
+D.cohorts.map(c=>`<tr><th>${c.cohort}</th>`+c.cells.map(v=>`<td style="background:${hue(v)};color:${v>55?'#fff':'#3b2f2a'}">${v}%</td>`).join("")+"</tr>").join("");
+$("ch").innerHTML="<tr><th>Channel</th><th>Users</th><th>Revenue/user</th><th>CAC</th><th>Ratio</th><th></th></tr>"+
+D.channels.map(r=>`<tr><th>${r.channel}</th><td>${r.users}</td><td>$${r.revenue}</td><td>$${r.cac}</td><td>${r.ratio}</td><td><div class="bar" style="width:${Math.min(r.ratio*40,160)}px"></div></td></tr>`).join("");
+</script></main></body></html>
